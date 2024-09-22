@@ -1,3 +1,4 @@
+# version: '3'
 services:
   mongo:
     image: mongo:latest
@@ -10,8 +11,7 @@ services:
       - '${MONGO_PORT}:27017'
     volumes:
       - ./mongo-data:/data/db
-    networks:
-      - project-network
+
 
   backend:
     container_name: backend
@@ -20,12 +20,20 @@ services:
     build:
       context: ./samla
       dockerfile: Dockerfile
-    env_file:
-      - .env
+    environment:
+      - PORT=${BACKEND_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - CLIENT_URL=http://front:3000
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ENDPOINT=${AWS_ENDPOINT}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+
     ports:
-      - '${PORT}:3000'
-    networks:
-      - project-network
+      - '${BACKEND_PORT}:${BACKEND_PORT}'
+    
 
   front:
     depends_on:
@@ -34,17 +42,13 @@ services:
     build:
       context: ./front-samla
       dockerfile: Dockerfile
-    env_file:
-      - .env
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    environment:
+      - FRONT_PORT=${FRONT_PORT}
+      - VITE_API_URL=${VITE_API_URL}
     ports:
       - '${FRONT_PORT}:80'
-    networks:
-      - project-network
-
 
 volumes:
   mongo-data:
-
-networks:
-  project-network:
-    driver: bridge
