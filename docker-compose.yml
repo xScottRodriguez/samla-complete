@@ -1,0 +1,48 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: db-prueba
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: prueba-tecnica
+    ports:
+      - '${MONGO_PORT}:27017'
+    volumes:
+      - ./mongo-data:/data/db
+    networks:
+      - project-network
+
+  backend:
+    container_name: backend
+    depends_on:
+      - mongo
+    build:
+      context: .
+      dockerfile: ./samla/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - '${PORT}:3000'
+    networks:
+      - project-network
+
+  front:
+    container_name: front
+    build:
+      context: .
+      dockerfile: ./front-samla/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - '${FRONT_PORT}:8080'
+    networks:
+      - project-network
+
+
+volumes:
+  mongo-data:
+
+networks:
+  project-network:
+    driver: bridge

@@ -1,0 +1,6 @@
+[submodule "samla"]
+	path = samla
+	url = git@github.com:xScottRodriguez/samla.git
+[submodule "front-samla"]
+	path = front-samla
+	url = git@github.com:xScottRodriguez/front-samla.git
