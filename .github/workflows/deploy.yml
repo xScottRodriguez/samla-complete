@@ -31,25 +31,17 @@ jobs:
       
     - name: Configure Git to use Access Token
       run: git config --global url."https://${{ secrets.ACCESS_TOKEN }}@github.com/".insteadOf "git@github.com:"
+
+    - name: update submodule
+      run: git submodule update --init --recursive
     
+
     - name: Stop existing container
-      run: |
-        docker compose down
-        docker image prune
-
-    - name: Deploy Docker container
-      run: |
-        docker compose up --build -d
-    # - name: update submodule
-    #   run: git submodule update --init --recursive
-    
-
-    # - name: Stop existing container
-    #   run:  docker compose down --rmi all --volumes --remove-orphans
+      run:  docker compose down --rmi all --volumes --remove-orphans
 
 
-    # - name: Run docker-compose
-    #   run: docker compose up --build -d
+    - name: Run docker-compose
+      run: docker compose up --build -d
    
 
     
