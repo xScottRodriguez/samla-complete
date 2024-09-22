@@ -36,8 +36,10 @@ jobs:
       run: git submodule update --init --recursive
     
 
-    - name: delete previus containers
-      run: docker compose down --rmi all --volumes --remove-orphans
+    - name: Stop existing container
+      run: |
+        docker compose down
+        docker image prune
 
     - name: Run docker-compose
       run: docker compose up --build -d
