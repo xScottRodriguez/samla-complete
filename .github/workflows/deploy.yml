@@ -1,0 +1,51 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Elige la rama desde la que deseas desplegar (por ejemplo, 'main' o 'master')
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '21'  
+
+    - name: Load Environment Variables
+      run: |
+          echo "MONGO_USER=${{ secrets.MONGO_USER }}" >> .env
+          echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
+          echo "MONGO_PORT=${{ secrets.MONGO_PORT }}" >> .env
+          echo "BACKEND_PORT=${{ secrets.BACKEND_PORT }}" >> .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          echo "CLIENT_URL=${{ secrets.CLIENT_URL }}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+          echo "AWS_ENDPOINT=${{ secrets.AWS_ENDPOINT }}" >> .env
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
+          echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "FRONT_PORT=${{ secrets.FRONT_PORT }}" >> .env
+      
+
+    - name: update submodule
+      run: git submodule update --init --recursive
+    
+
+    - name: delete previus containers
+      run: docker compose down --rmi all --volumes --remove-orphans
+
+    - name: Run docker-compose
+      run: docker compose up --build -d
+   
+
+    
+          
+          
