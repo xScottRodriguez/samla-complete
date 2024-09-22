@@ -1,4 +1,4 @@
-# version: '3'
+version: '3'
 services:
   mongo:
     image: mongo:latest
@@ -11,8 +11,8 @@ services:
       - '${MONGO_PORT}:27017'
     volumes:
       - ./mongo-data:/data/db
-
-
+    networks:
+      - samla-network
   backend:
     container_name: backend
     depends_on:
@@ -23,17 +23,17 @@ services:
     environment:
       - PORT=${BACKEND_PORT}
       - DATABASE_URL=${DATABASE_URL}
-      - CLIENT_URL=http://front:3000
+      - CLIENT_URL=${CLIENT_URL}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_ENDPOINT=${AWS_ENDPOINT}
       - AWS_REGION=${AWS_REGION}
       - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
       - JWT_SECRET=${JWT_SECRET}
-
     ports:
       - '${BACKEND_PORT}:${BACKEND_PORT}'
-    
+    networks:
+      - samla-network
 
   front:
     depends_on:
@@ -42,13 +42,17 @@ services:
     build:
       context: ./front-samla
       dockerfile: Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL}
     environment:
       - FRONT_PORT=${FRONT_PORT}
-      - VITE_API_URL=${VITE_API_URL}
+      - VITE_API_URL=http://backend:${BACKEND_PORT}/api
     ports:
       - '${FRONT_PORT}:80'
+    networks:
+      - samla-network
 
 volumes:
   mongo-data:
+
+networks:
+  samla-network:
+    driver: bridge
