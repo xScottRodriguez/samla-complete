@@ -18,8 +18,8 @@ services:
     depends_on:
       - mongo
     build:
-      context: .
-      dockerfile: ./samla/Dockerfile
+      context: ./samla
+      dockerfile: Dockerfile
     env_file:
       - .env
     ports:
@@ -28,14 +28,16 @@ services:
       - project-network
 
   front:
+    depends_on:
+      - backend
     container_name: front
     build:
-      context: .
-      dockerfile: ./front-samla/Dockerfile
+      context: ./front-samla
+      dockerfile: Dockerfile
     env_file:
       - .env
     ports:
-      - '${FRONT_PORT}:8080'
+      - '${FRONT_PORT}:80'
     networks:
       - project-network
 
