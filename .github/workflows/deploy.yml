@@ -27,8 +27,11 @@ jobs:
           echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
           echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "FRONT_PORT=${{ secrets.FRONT_PORT }}" >> .env    
-    
+          echo "FRONT_PORT=${{ secrets.FRONT_PORT }}" >> .env
+      
+    - name: Configure Git to use Access Token
+      run: git config --global url."https://${{ secrets.ACCESS_TOKEN }}@github.com/".insteadOf "git@github.com:"
+
     - name: update submodule
       run: git submodule update --init --recursive
     
