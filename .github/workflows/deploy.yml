@@ -38,7 +38,7 @@ jobs:
     
 
     - name: Stop existing container
-      run:  docker compose down --rmi all
+      run:  docker compose down --rmi all --volumes --remove-orphans
 
 
     - name: Run docker-compose
